@@ -1,4 +1,4 @@
-# batchscrip
+# batchscript
 ![BATCH](https://img.shields.io/badge/Made%20with-Bash-1f425f.svg)
 
 
