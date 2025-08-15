@@ -5,78 +5,123 @@ cls
 @echo -----------------------------------
 @echo Github: https://github.com/suchsoak
 @echo -----------------------------------
-timeout 4 >null
+timeout 2 >null
 @echo.
-@echo [!] informacoes de disco:
+:: Informacoes de disco
+@echo [!] Informacoes de disco:
 @echo.
-wmic diskdrive list brief
-@echo.
-@echo [!] Estado Do Disco:
-@echo.
-@echo.
-wmic diskdrive get status
-color 7
+powershell -Command "Get-PhysicalDisk | Format-Table FriendlyName, MediaType, Size, SerialNumber, OperationalStatus"
+if not errorlevel 1 (
+    @echo.
+    @echo [*] Informacoes de disco obtidas com sucesso.
+) else (
+    @echo.
+    @echo [!] Erro ao obter informacoes de disco.
+)
 timeout 6 >null
 cls
 @echo.
-@echo::::::::::::::::::::::::::::::::::::::::::::
-@echo:: [!] Verificadores de disco
-@echo::::::::::::::::::::::::::::::::::::::::::::
+@echo =====================================================
+@echo =            [!] VERIFICADORES DE DISCO             =
+@echo =====================================================
 @echo.
-@echo -------------------------
-@echo  [*] Sfc /ScanNow
-@echo -------------------------
-timeout 2 >null
+
+:: SFC ScanNow
+color 3
+@echo -----------------------------------------------------
+@echo   [*] Verificando integridade dos arquivos do sistema
+@echo   [*] Comando: Sfc /ScanNow
+@echo -----------------------------------------------------
+color 7
+timeout 2 >nul
 Sfc /ScanNow
 cls
-@echo.
-@echo -------------------------
-@echo  [*] dism /online /cleanup-image /scanhealth
-@echo -------------------------
-timeout 2 >null
+
+:: DISM ScanHealth
+color 6
+@echo -----------------------------------------------------
+@echo   [*] Verificando imagem do Windows (ScanHealth)
+@echo   [*] Comando: dism /online /cleanup-image /scanhealth
+@echo -----------------------------------------------------
+color 7
 dism /online /cleanup-image /scanhealth
+timeout 2 >nul
 cls
-@echo.
-@echo -------------------------
-@echo  [*] dism /online /cleanup-image /restorehealth
-@echo -------------------------
-timeout 2 >null
+
+:: DISM RestoreHealth
+color 2
+@echo -----------------------------------------------------
+@echo   [*] Restaurando imagem do Windows (RestoreHealth)
+@echo   [*] Comando: dism /online /cleanup-image /restorehealth
+@echo -----------------------------------------------------
+color 7
 dism /online /cleanup-image /restorehealth
+timeout 5 >nul
 cls
-@echo.
-@echo -------------------------
-@echo  [*] dism /Online /Cleanup-Image /CheckHealth
-@echo -------------------------
-timeout 2 >null
+
+:: DISM CheckHealth
+color 9
+@echo -----------------------------------------------------
+@echo   [*] Checando saúde da imagem do Windows (CheckHealth)
+@echo   [*] Comando: dism /Online /Cleanup-Image /CheckHealth
+@echo -----------------------------------------------------
+color 7
 dism /Online /Cleanup-Image /CheckHealth
+timeout 2 >nul
 cls
-@echo.
-@echo -------------------------
-@echo  [*] chkdsk
-@echo -------------------------
-timeout 3 >null
+
+:: CHKDSK
+color 5
+@echo -----------------------------------------------------
+@echo   [*] Verificando disco rígido (chkdsk)
+@echo   [*] Comando: chkdsk
+@echo -----------------------------------------------------
+color 7
+timeout 3 >nul
 chkdsk
 cls
-@echo.
-@echo -------------------------
-@echo  [*] Apagando Arquivos Temporarios
-@echo -------------------------
+
+:: Apagando arquivos temporários
+color 4
+@echo -----------------------------------------------------
+@echo   [*] Apagando arquivos temporários (%temp%)
+@echo -----------------------------------------------------
+color 7
 cd %temp%
 del /F /Q *
-timeout 3 >null
+timeout 3 >nul
 cls
-@echo.
-@echo -------------------------
-@echo  [*] Identificando Disco
-@echo -------------------------
+
+:: Identificando Disco
+color 1
+@echo -----------------------------------------------------
+@echo   [*] Identificando Disco
+@echo -----------------------------------------------------
+color 7
 @echo.
 
 wmic diskdrive get mediatype | findstr /c:"Fix hard disk media" > null
-
 if %errorlevel% == 0 (
-    @echo [*] Recomendo desfragmentar o HD
+  color 3
+  @echo -----------------------------------------------------
+  @echo   [*] Desfragmentando Disco Rígido (HDD)...
+  @echo   [*] Comando: defrag C: /U /V
+  @echo -----------------------------------------------------
+  color 7
+  defrag C: /U /V
+  timeout 3 >null
+  color 2
+  @echo -----------------------------------------------------
+  @echo   [*] Desfragmentação Concluída.
+  @echo -----------------------------------------------------
+  color 7
 ) else (
-    @echo [*] SSD nao e recomendo desfragmentar
+  color 6
+  @echo -----------------------------------------------------
+  @echo   [*] SSD detectado: NÃO é recomendado desfragmentar.
+  @echo -----------------------------------------------------
+  color 7
+  timeout 3 >null
 )
 
 timeout 3 >null
@@ -107,10 +152,9 @@ if %op% equ 2 goto op2
 timeout 3 >null
 chkdsk /r
 @echo.
-@echo::::::::::::::::::::::::::::::::::::::::::::
-@echo:: [!] Por padrao, o seu computador não irar ser reiniciado depois do comando, porem e recomendavel.
-@echo::::::::::::::::::::::::::::::::::::::::::::
-
+@echo =====================================
+@echo =  [!] Agora reinicie o computador. =
+@echo =====================================
 :op2
 cls 
 @echo.
