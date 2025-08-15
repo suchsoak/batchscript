@@ -1,5 +1,5 @@
 # BATCHALL
-<img src="https://github.com/suchsoak/batchscript/blob/main/BATCHALL.png" alt="batchall.png"></img>
+<img src="https://github.com/suchsoak/batchscript/blob/main/BATCHALL_.png" alt="batchall.png"></img>
 
 # O que é o BATCHALL?
 Batchall é um script com uma galeria interna de scripts internos para ajudar as pessoas com tarefas como otimizar o `disco` ou resetar o `netsh`
