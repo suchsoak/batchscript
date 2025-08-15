@@ -1,34 +1,42 @@
 @echo off
 cls
+color 3
 @echo.
-@echo -----------------------------------
-@echo github: https://github.com/suchsoak
-@echo -----------------------------------
+@echo ============================================================
+@echo =                 RESETADORES NETSH                        =
+@echo ============================================================
 @echo.
+@echo      Github: https://github.com/suchsoak
+@echo ============================================================
+@echo.
+color 2
+@echo  ╔════════════════════════════════════════════════════════╗
+@echo  ║                ESCOLHA UMA OPÇÃO                       ║
+@echo  ╠════════════════════════════════════════════════════════╣
+@echo  ║   [1] Colocar Regras De Firewall                       ║
+@echo  ║   [2] Nao Colocar Regras De Firewall                   ║
+@echo  ╚════════════════════════════════════════════════════════╝
+color 7
 @echo.
 
-@echo::::::::::::::::::::::::::::::::::::::::::::
-@echo:: [*] S. Colocar Regras De Firewall
-@echo:: [*] N. Nao Colocar Regras De Firewall
-@echo:::::::::::::::::::::::::::::::::::::::::::: 
+set /p firewall=  escolha uma opcao: 
 
+if %firewall% == 1 goto firewall1
+if %firewall% == 2 goto firewall2
 
-set /p escolha=  escolha uma opcao: 
-
-if %escolha% == S goto escolhaS
-if %escolha% == N goto escolhaN
-
-:escolhaS
+:firewall1
 
 cls
 color 1
 @echo.
 @echo Regras De Firewall
 @echo.
+
 @echo off
 set /p porta=Coloque a porta:
 @echo. 
 @echo Porta escolhida: %porta%
+
 timeout 1 > null
 netsh advfirewall firewall add rule name="Block %porta%" dir=in action=block protocol=TCP localport=%porta% 
 @echo.
@@ -44,6 +52,8 @@ netsh wlan show interfaces | findstr "Sinal"
 netsh wlan show interfaces | findstr "Canal"
 netsh wlan show interfaces | findstr "Descrição"
 netsh wlan show interfaces | findstr "BSSID"
+netsh wlan show interfaces | findstr "Criptografia"
+netsh wlan show interfaces | findstr "Faixa"
 netsh interface ipv4 show addresses "Wi-Fi" | findstr "Endereço IP"
 timeout 3 >null
 @echo::::::::::::::::::::::::::::::::::::::::::::
@@ -55,6 +65,7 @@ timeout 3 >null
 @echo:::::::::::::::::::::::::::::::::::::::::::: 
 timeout /t 2 >null
 ipconfig /renew
+ipconfig /flushdns
 timeout /t 2 >null
 cls
 @echo::::::::::::::::::::::::::::::::::::::::::::
@@ -90,7 +101,7 @@ cls
 @pause
 exit
 
-:escolhaN
+:firewall2
 cls
 color 4
 timeout 2 >null
@@ -105,6 +116,8 @@ netsh wlan show interfaces | findstr "Sinal"
 netsh wlan show interfaces | findstr "Canal"
 netsh wlan show interfaces | findstr "Descrição"
 netsh wlan show interfaces | findstr "BSSID"
+netsh wlan show interfaces | findstr "Criptografia"
+netsh wlan show interfaces | findstr "Faixa"
 netsh interface ipv4 show addresses "Wi-Fi" | findstr "Endereço IP"
 timeout 3 >null
 @echo::::::::::::::::::::::::::::::::::::::::::::
@@ -143,9 +156,10 @@ timeout /t 3 >null
 cls
 
 @echo.
-@echo -------------------------------------------------
+@echo ================================================
 @echo Netsh configurado, agora reinicie o computador.
-@echo -------------------------------------------------
+@echo ================================================
+
 @echo.
 @pause
 exit
