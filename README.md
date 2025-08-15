@@ -1,12 +1,14 @@
-# batchscript
-![BATCH](https://img.shields.io/badge/Made%20with-Bash-1f425f.svg)
+# BATCHALL
+<img src="https://github.com/suchsoak/batchscript/blob/main/BATCHALL.png" alt="batchall.png"></img>
 
+# O que é o BATCHALL?
+Batchall é um script com uma galeria interna de scripts internos para ajudar as pessoas com tarefas como otimizar o `disco` ou resetar o `netsh`
 
 >[!WARNING]
-> A microsoft infelizmente descontinuou o `WMIC` e o script tem o comando inserido. Esse comando funciona apenas wm versões anteriores ao `Windows 10 21h2`. Na versão 1.0.8 esse comando sairá e entrará um para todas as versão.
+> O script não tem mais o comando `WMIC`, ao invés disso foi substituído pelo `powershell`.
 
 >[!NOTE]
->Por enquanto a apenas 8 script. Porém, pretendo colocar mais. Enquanto isso se quiser mais opções de script vá no meu outro github com scrips escritos em powershell
+>Por enquanto a apenas 8 script. Porém, pretendo colocar mais. Enquanto isso se quiser mais opções de script vá no meu outro github com scrips escritos em powershell.
 >
 >https://github.com/suchsoak/Powershell_script
 
@@ -156,60 +158,73 @@ O intuito do script é ter informações sobre seu Desktop pessoal.
 
 # Como usar:
 
-Para utilizar o script, baixe ele em arquivo zipado ou por linha de comando (cmd)
-
-Execute ele de preferencia como administrador.
-
-# Via cmd windows:
-
-> Já com o Informações.bat instalado, execute no terminal se preferir:
+Utilize o `batchall.bat` como administrador, caso você não abra como adiministrador ele exibira uma mensagem.
 
 ```sh
- start Informacoes.bat
+if %errorlevel% neq 0 (
+    @echo.
+    @echo =====================================================
+    @echo =             [!] Github: github.com/suchsoak        =
+    @echo =             [!] Versao: 1.0.8                      =
+    @echo =             [!] BY: suchsoak                       =
+    @echo =====================================================
+    @echo.
+    @echo [!] Este script precisa ser executado como administrador.
+    @echo.
+    @pause
+    exit
+)
 ```
 
 # Sobre o script
 
 O script irar retornar informações sobre: 
 
-processador
+### processador
 
 ```sh
- @echo [!] Informacoes Do Processador:
+@echo [!] Informacoes Do Processador:
 color 5
-timeout /t 6 > null
-@echo.
-wmic CPU get name
+timeout /t 2 > null
 @echo.
 @echo [*] Arquitetura: %PROCESSOR_ARCHITECTURE%
 @echo [*] Processador: %PROCESSOR_IDENTIFIER% 
 @echo [*] Versao: %PROCESSOR_REVISION% 
 @echo [*] Nucleos: %NUMBER_OF_PROCESSORS%
-@echo.
-@echo --------------------
-
 ```
 
-Disco
+### Disco
 
 ```sh
 @echo [!] Informacoes do disco:
 color 6
-timeout /t 5 > null
+timeout /t 2 > null
 @echo.
-wmic diskdrive list brief
+powershell -command "Get-CimInstance Win32_DiskDrive | Select-Object DeviceID, Model, Size"
+@echo.
+powershell -command "Get-CimInstance Win32_LogicalDisk | Select-Object DeviceID, Size, FreeSpace"
 @echo --------------------
 @echo.
 @echo [!] Informacoes da Placa De Video:
 color 7
 timeout /t 5 > null
 @echo.
-wmic path win32_VideoController get name
-wmic path win32_VideoController get name, adapterram, driverversion
+powershell -command "Get-CimInstance Win32_VideoController | Select-Object Name"
+powershell -command "Get-CimInstance Win32_VideoController | Select-Object Name, AdapterRAM, DriverVersion"
 @echo.
 @echo --------------------
+@echo.
+color 9
+timeout /t 5 > null
+@echo [!] Informacoes da Placa Mae:
+@echo.
+color 2
+timeout /t 2 > null
+powershell -command "Get-CimInstance Win32_BIOS | Select-Object Name"
+powershell -command "Get-CimInstance Win32_BIOS | Select-Object ReleaseDate"
+powershell -command "Get-CimInstance Win32_BaseBoard | Select-Object Product"
 ```
-Memoria Ram
+### Memoria Ram
 
 ```sh
 @echo [!] Informacoes da Memoria Ram:
@@ -219,7 +234,7 @@ echo.
 @echo --------------------
 
 ```
-Informações De Rede
+### Informações De Rede
 
 ```sh
 @echo [!] Informacoes De Rede:
@@ -249,6 +264,12 @@ curl -s ipinfo.io | findstr "city"
 curl -s ipinfo.io | findstr "hostname"
 curl -s ipinfo.io | findstr "loc"
 curl -s ipinfo.io | findstr "org"
+curl -s ipinfo.io | findstr "timezone"
+curl -s ipinfo.io | findstr "readme"
+curl -s ipinfo.io | findstr "anycast"
+curl -s ipinfo.io | findstr "asn"
+curl -s ipinfo.io | findstr "abuse"
+curl -s ipinfo.io | findstr "privacy"
 
 ```
 
@@ -404,8 +425,9 @@ Windows 11 Enterprise N LTSC 2019	92NFX-8DJQP-P6BBQ-THF9C-7CG2H
 | del /F /Q * | https://answers.microsoft.com/pt-br/windows/forum/all/como-forçar-o-delete-de-uma-pasta-no-windows/86d37617-6ec9-4c0f-b219-0d299a6e3d42
 | wmic | https://learn.microsoft.com/pt-br/windows-server/administration/windows-commands/wmic
 | reg add | https://learn.microsoft.com/pt-br/windows-server/administration/windows-commands/reg-add
+| powershell -command | https://learn.microsoft.com/pt-br/powershell/scripting/overview?view=powershell-7.5
 
 
 License & Copyright
 -----------------------
-`MIT License Copyright (c) 2024 ~#M?x`
+`MIT License Copyright (c) 2025 ~#M?x`
