@@ -1,23 +1,24 @@
+
 @echo off
 cls
 color 4
 @echo.
 @echo.
-@echo --------------------
+@echo ============================================================
+@echo =                  INFORMACOES DO SISTEMA                  =
+@echo ============================================================
 @echo.
-@echo [*] github: https://github.com/suchsoak 
-@echo.
-@echo --------------------
-@echo.
-timeout /t 6 >null
-wmic OS get name
+@echo [*] Github: https://github.com/suchsoak
+@echo ============================================================
+timeout /t 2 >nul
+@echo [*] Sistema Operacional:
+systeminfo | findstr /I "OS"
 ver
-@echo.
+@echo ============================================================
+@echo [*] Data: 
 date /t
-@echo. 
-@echo Horas: %time%
-@echo.
-@echo --------------------
+@echo [*] Hora: %time%
+@echo ============================================================
 @echo.
 @echo [!] Local:
 timeout /t 2 > null
@@ -32,14 +33,13 @@ curl -s ipinfo.io | findstr "city"
 curl -s ipinfo.io | findstr "hostname"
 curl -s ipinfo.io | findstr "loc"
 curl -s ipinfo.io | findstr "org"
+curl -s ipinfo.io | findstr "timezone"
+curl -s ipinfo.io | findstr "readme"
+curl -s ipinfo.io | findstr "anycast"
+curl -s ipinfo.io | findstr "asn"
+curl -s ipinfo.io | findstr "abuse"
+curl -s ipinfo.io | findstr "privacy"
 @echo.
-
-if curl -s ipinfo.io == nul(
-  @echo.
-)else(
-  @echo error
-)
-
 @echo [!] Informacoes Adicionais:
 @echo.
 color 1
@@ -49,16 +49,14 @@ systeminfo| findstr "Proprietário registrado"
 @echo [*] Maquina: %computername%  
 @echo [*] Usuario: %username% 
 @echo [*] Operacional: %OS% 
-@echo [*] Pasta: %SYSTEMROOT& 
-timeout /t 6 > null
+@echo [*] Pasta: %SYSTEMROOT% 
+timeout /t 3 > null
 @echo.
 @echo --------------------
 @echo.
 @echo [!] Informacoes Do Processador:
 color 5
-timeout /t 6 > null
-@echo.
-wmic CPU get name
+timeout /t 2 > null
 @echo.
 @echo [*] Arquitetura: %PROCESSOR_ARCHITECTURE%
 @echo [*] Processador: %PROCESSOR_IDENTIFIER% 
@@ -69,19 +67,19 @@ wmic CPU get name
 @echo.
 @echo [!] Informacoes do disco:
 color 6
-timeout /t 5 > null
+timeout /t 2 > null
 @echo.
-wmic diskdrive list brief
+powershell -command "Get-CimInstance Win32_DiskDrive | Select-Object DeviceID, Model, Size"
 @echo.
-wmic partition get name,size,type
+powershell -command "Get-CimInstance Win32_LogicalDisk | Select-Object DeviceID, Size, FreeSpace"
 @echo --------------------
 @echo.
 @echo [!] Informacoes da Placa De Video:
 color 7
 timeout /t 5 > null
 @echo.
-wmic path win32_VideoController get name
-wmic path win32_VideoController get name, adapterram, driverversion
+powershell -command "Get-CimInstance Win32_VideoController | Select-Object Name"
+powershell -command "Get-CimInstance Win32_VideoController | Select-Object Name, AdapterRAM, DriverVersion"
 @echo.
 @echo --------------------
 @echo.
@@ -91,15 +89,15 @@ timeout /t 5 > null
 @echo.
 color 2
 timeout /t 2 > null
-wmic BIOS get name
-wmic bios get ReleaseDate
-wmic baseboard get product
+powershell -command "Get-CimInstance Win32_BIOS | Select-Object Name"
+powershell -command "Get-CimInstance Win32_BIOS | Select-Object ReleaseDate"
+powershell -command "Get-CimInstance Win32_BaseBoard | Select-Object Product"
 @echo.
 @echo --------------------
 @echo.
 @echo [!] Informacoes da Memoria Ram:
 @echo.
-wmic memorychip get Manufacturer,Capacity,PartNumber,Speed,DeviceLocator
+powershell -command "Get-CimInstance Win32_PhysicalMemory | Select-Object Manufacturer, Capacity, PartNumber, Speed, DeviceLocator"
 echo.
 @echo --------------------
 @echo.
@@ -120,125 +118,151 @@ netsh wlan show interfaces | findstr "Criptografia"
 netsh wlan show interfaces | findstr "Faixa"
 color 7
 @echo.
-@echo --------------------
-timeout /t 3 >null
-@echo [!] Salvando as informacoes em um arquivo txt (informacoes.txt)...
-@echo --------------------
-@echo off
-@echo -------------------- > informacoes.txt
-@echo. >> informacoes.txt
-@echo [*] github: https://github.com/suchsoak >> informacoes.txt
-@echo. >> informacoes.txt
-@echo -------------------- >> informacoes.txt
-@echo. >> informacoes.txt
-wmic OS get name >> informacoes.txt
-ver >> informacoes.txt
-@echo. >> informacoes.txt
-date /t >> informacoes.txt
-@echo.  >> informacoes.txt
-@echo Horas: %time% >> informacoes.txt
-@echo. >> informacoes.txt
-@echo -------------------- >> informacoes.txt
-@echo. >> informacoes.txt
-@echo [!] Local: >> informacoes.txt
-timeout /t 2 > null
-@echo. >> informacoes.txt
-@echo IP: >> informacoes.txt
-@echo. >> informacoes.txt
-curl ipinfo.io | findstr "ip" >> informacoes.txt
-curl ipinfo.io | findstr "country" >> informacoes.txt
-curl ipinfo.io | findstr "region" >> informacoes.txt
-curl ipinfo.io | findstr "postal" >> informacoes.txt
-curl ipinfo.io | findstr "city" >> informacoes.txt
-curl ipinfo.io | findstr "hostname" >> informacoes.txt
-curl ipinfo.io | findstr "loc" >> informacoes.txt
-curl ipinfo.io | findstr "org" >> informacoes.txt
-@echo -------------------- >> informacoes.txt
-@echo. >> informacoes.txt
-@echo [!] Informacoes Adicionais: >> informacoes.txt
-@echo. >> informacoes.txt
+:: Tenta criar o arquivo informacoes.txt na pasta atual
+set "INFOFILE=%CD%\informacoes.txt"
+:: Se não conseguir, tenta criar na pasta TEMP do usuário
+type nul > "%INFOFILE%" 2>nul
+if not exist "%INFOFILE%" (
+  set "INFOFILE=%TEMP%\informacoes.txt"
+  type nul > "%INFOFILE%" 2>nul
+)
+:: Se ainda não conseguir, mostra erro e sai
+if not exist "%INFOFILE%" (
+  color 4
+  @echo [!] ERRO: Não foi possível criar o arquivo informacoes.txt.
+  @echo [!] Verifique permissões de escrita na pasta atual ou no TEMP.
+  @pause
+  goto :eof
+)
+
+attrib -R "%INFOFILE%"
+type nul > "%INFOFILE%"
+@echo -------------------- >> "%INFOFILE%"
+timeout /t 3 >nul
+@echo [!] Salvando as informacoes em um arquivo txt (informacoes.txt)... >> "%INFOFILE%"
+@echo -------------------- >> "%INFOFILE%"
+@echo off >> "%INFOFILE%"
+@echo -------------------- >> "%INFOFILE%"
+@echo. >> "%INFOFILE%"
+@echo [*] github: https://github.com/suchsoak >> "%INFOFILE%"
+@echo. >> "%INFOFILE%"
+@echo -------------------- >> "%INFOFILE%"
+@echo. >> "%INFOFILE%"
+powershell -Command "Get-CimInstance Win32_OperatingSystem | Select-Object Name" >> "%INFOFILE%"
+ver >> "%INFOFILE%"
+@echo. >> "%INFOFILE%"
+date /t >> "%INFOFILE%"
+@echo.  >> "%INFOFILE%"
+@echo Horas: %time% >> "%INFOFILE%"
+@echo. >> "%INFOFILE%"
+@echo -------------------- >> "%INFOFILE%"
+@echo. >> "%INFOFILE%"
+@echo [!] Local: >> "%INFOFILE%"
+timeout /t 2 > nul
+@echo. >> "%INFOFILE%"
+@echo IP: >> "%INFOFILE%"
+@echo. >> "%INFOFILE%"
+curl -s ipinfo.io | findstr "ip" >> "%INFOFILE%"
+curl -s ipinfo.io | findstr "country" >> "%INFOFILE%"
+curl -s ipinfo.io | findstr "region" >> "%INFOFILE%"
+curl -s ipinfo.io | findstr "postal" >> "%INFOFILE%"
+curl -s ipinfo.io | findstr "city" >> "%INFOFILE%"
+curl -s ipinfo.io | findstr "hostname" >> "%INFOFILE%"
+curl -s ipinfo.io | findstr "loc" >> "%INFOFILE%"
+curl -s ipinfo.io | findstr "org" >> "%INFOFILE%"
+curl -s ipinfo.io | findstr "timezone" >> "%INFOFILE%"
+curl -s ipinfo.io | findstr "readme" >> "%INFOFILE%"
+curl -s ipinfo.io | findstr "anycast" >> "%INFOFILE%"
+curl -s ipinfo.io | findstr "asn" >> "%INFOFILE%"
+curl -s ipinfo.io | findstr "abuse" >> "%INFOFILE%"
+curl -s ipinfo.io | findstr "privacy" >> "%INFOFILE%"
+@echo -------------------- >> "%INFOFILE%"
+@echo. >> "%INFOFILE%"
+@echo [!] Informacoes Adicionais: >> "%INFOFILE%"
+@echo. >> "%INFOFILE%"
 color 1
-systeminfo| findstr "Proprietário registrado" >> informacoes.txt
-@echo.>> informacoes.txt
-@echo [*] Serial: %PROGRAMFILES(x86)% >> informacoes.txt
-@echo [*] Maquina: %computername% >> informacoes.txt
-@echo [*] Usuario: %username% >> informacoes.txt
-@echo [*] Operacional: %OS% >> informacoes.txt
-@echo [*] Pasta: %SYSTEMROOT% >> informacoes.txt
-@echo. >> informacoes.txt
-@echo -------------------- >> informacoes.txt
-@echo. >> informacoes.txt
-@echo [!] Informacoes Do Processador: >> informacoes.txt
+systeminfo| findstr "Proprietário registrado" >> "%INFOFILE%"
+@echo.>> "%INFOFILE%"
+@echo [*] Serial: %PROGRAMFILES(x86)% >> "%INFOFILE%"
+@echo [*] Maquina: %computername% >> "%INFOFILE%"
+@echo [*] Usuario: %username% >> "%INFOFILE%"
+@echo [*] Operacional: %OS% >> "%INFOFILE%"
+@echo [*] Pasta: %SYSTEMROOT% >> "%INFOFILE%"
+@echo. >> "%INFOFILE%"
+@echo -------------------- >> "%INFOFILE%"
+@echo. >> "%INFOFILE%"
+@echo [!] Informacoes Do Processador: >> "%INFOFILE%"
 color 5
-@echo. >> informacoes.txt
-wmic CPU get name >> informacoes.txt
-@echo. >> informacoes.txt
-@echo [*] Arquitetura: %PROCESSOR_ARCHITECTURE% >> informacoes.txt
-@echo [*] Processador: %PROCESSOR_IDENTIFIER% >> informacoes.txt
-@echo [*] Versao: %PROCESSOR_REVISION% >> informacoes.txt
-@echo [*] Nucleos: %NUMBER_OF_PROCESSORS% >> informacoes.txt
-@echo. >> informacoes.txt
-@echo -------------------- >> informacoes.txt
-@echo. >> informacoes.txt
-@echo [!] Informacoes do disco: >> informacoes.txt
+@echo. >> "%INFOFILE%"
+powershell -command "Get-CimInstance Win32_Processor | Select-Object Name" >> "%INFOFILE%"
+@echo. >> "%INFOFILE%"
+@echo [*] Arquitetura: %PROCESSOR_ARCHITECTURE% >> "%INFOFILE%"
+@echo [*] Processador: %PROCESSOR_IDENTIFIER% >> "%INFOFILE%"
+@echo [*] Versao: %PROCESSOR_REVISION% >> "%INFOFILE%"
+@echo [*] Nucleos: %NUMBER_OF_PROCESSORS% >> "%INFOFILE%"
+@echo. >> "%INFOFILE%"
+@echo -------------------- >> "%INFOFILE%"
+@echo. >> "%INFOFILE%"
+@echo [!] Informacoes do disco: >> "%INFOFILE%"
 color 6
-@echo. >> informacoes.txt
-wmic diskdrive list brief >> informacoes.txt
-@echo -------------------- >> informacoes.txt
-@echo. >> informacoes.txt
-@echo [!] Informacoes da Placa De Video: >> informacoes.txt
+@echo. >> "%INFOFILE%"
+powershell -command "Get-CimInstance Win32_DiskDrive | Select-Object DeviceID, Model, Size" >> "%INFOFILE%"
+@echo -------------------- >> "%INFOFILE%"
+@echo. >> "%INFOFILE%"
+@echo [!] Informacoes da Placa De Video: >> "%INFOFILE%"
 color 7
-@echo. >> informacoes.txt
-wmic path win32_VideoController get name >> informacoes.txt
-wmic path win32_VideoController get name, adapterram, driverversion >> informacoes.txt
-@echo. >> informacoes.txt
-@echo -------------------- >> informacoes.txt
-@echo. >> informacoes.txt
+@echo. >> "%INFOFILE%"
+powershell -command "Get-CimInstance Win32_VideoController | Select-Object Name" >> "%INFOFILE%"
+powershell -command "Get-CimInstance Win32_VideoController | Select-Object Name, AdapterRAM, DriverVersion" >> "%INFOFILE%"
+@echo. >> "%INFOFILE%"
+@echo -------------------- >> "%INFOFILE%"
+@echo. >> "%INFOFILE%"
 color 9
-@echo [!] Informacoes da Placa Mae: >> informacoes.txt
-@echo. >> informacoes.txt
+@echo [!] Informacoes da Placa Mae: >> "%INFOFILE%"
+@echo. >> "%INFOFILE%"
 color 2
-wmic baseboard get Manufacturer >> informacoes.txt
-wmic BIOS get name >> informacoes.txt
-wmic bios get ReleaseDate >> informacoes.txt
-wmic baseboard get product >> informacoes.txt
-@echo. >> informacoes.txt
-@echo -------------------- >> informacoes.txt
-@echo. >> informacoes.txt
-@echo [!] Informacoes da Memoria Ram: >> informacoes.txt
-@echo. >> informacoes.txt
-wmic memorychip get Manufacturer,Capacity,PartNumber,Speed,DeviceLocator >> informacoes.txt
-echo. >> informacoes.txt
-@echo. >> informacoes.txt
-@echo -------------------- >> informacoes.txt
-@echo. >> informacoes.txt
-@echo [!] Informacoes De Rede: >> informacoes.txt
-@echo. >> informacoes.txt
+powershell -command "Get-CimInstance Win32_BaseBoard | Select-Object Manufacturer" >> "%INFOFILE%"
+powershell -command "Get-CimInstance Win32_BIOS | Select-Object Name" >> "%INFOFILE%"
+powershell -command "Get-CimInstance Win32_BIOS | Select-Object ReleaseDate" >> "%INFOFILE%"
+powershell -command "Get-CimInstance Win32_BaseBoard | Select-Object Product" >> "%INFOFILE%"
+@echo. >> "%INFOFILE%"
+@echo -------------------- >> "%INFOFILE%"
+@echo. >> "%INFOFILE%"
+@echo [!] Informacoes da Memoria Ram: >> "%INFOFILE%"
+@echo. >> "%INFOFILE%"
+powershell -command "Get-CimInstance Win32_PhysicalMemory | Select-Object Manufacturer, Capacity, PartNumber, Speed, DeviceLocator" >> "%INFOFILE%"
+@echo. >> "%INFOFILE%"
+@echo. >> "%INFOFILE%"
+@echo -------------------- >> "%INFOFILE%"
+@echo. >> "%INFOFILE%"
+@echo [!] Informacoes De Rede: >> "%INFOFILE%"
+@echo. >> "%INFOFILE%"
 color 8
-netsh interface ipv4 show addresses "Wi-Fi" | findstr "Endereço IP" >> informacoes.txt
-netsh wlan show profiles name="Interface" key=clear | findstr "Nome SSID" >> informacoes.txt
-netsh wlan show profiles name="Interface" key=clear | findstr "Chave" >> informacoes.txt
-netsh wlan show interfaces | findstr "Perfil" >> informacoes.txt
-netsh wlan show interfaces | findstr "Estado" >> informacoes.txt
-netsh wlan show interfaces | findstr "Sinal" >> informacoes.txt
-netsh wlan show interfaces | findstr "Canal" >> informacoes.txt
-netsh wlan show interfaces | findstr "Descrição" >> informacoes.txt
-netsh wlan show interfaces | findstr "BSSID" >> informacoes.txt
-netsh wlan show interfaces | findstr "Criptografia" >> informacoes.txt
-netsh wlan show interfaces | findstr "Faixa" >> informacoes.txt
+netsh interface ipv4 show addresses "Wi-Fi" | findstr "Endereço IP" >> "%INFOFILE%"
+netsh wlan show profiles name="Interface" key=clear | findstr "Nome SSID" >> "%INFOFILE%"
+netsh wlan show profiles name="Interface" key=clear | findstr "Chave" >> "%INFOFILE%"
+netsh wlan show interfaces | findstr "Perfil" >> "%INFOFILE%"
+netsh wlan show interfaces | findstr "Estado" >> "%INFOFILE%"
+netsh wlan show interfaces | findstr "Sinal" >> "%INFOFILE%"
+netsh wlan show interfaces | findstr "Canal" >> "%INFOFILE%"
+netsh wlan show interfaces | findstr "Descrição" >> "%INFOFILE%"
+netsh wlan show interfaces | findstr "BSSID" >> "%INFOFILE%"
+netsh wlan show interfaces | findstr "Criptografia" >> "%INFOFILE%"
+netsh wlan show interfaces | findstr "Faixa" >> "%INFOFILE%"
 color 7
-@echo. >> informacoes.txt
-@echo -------------------- >> informacoes.txt
-timeout 5 >null
+@echo. >> "%INFOFILE%"
+@echo -------------------- >> "%INFOFILE%"
+timeout 5 >nul
 @echo -------------------- 
-@echo [*] Todas as informacoes foram salvas.
+@echo [*] Todas as informacoes foram salvas em: %INFOFILE%
 @echo -------------------- 
-timeout 3 >null
+timeout 3 >nul
+start C:\Windows\System32\informacoes.txt
 @echo -------------------- 
 @echo [!] Precione Enter para sair do terminal.
 @echo -------------------- 
+
 set /p sair=
-if "%input%"==""(
+if "%sair%" == "" (
   exit
 )
-
