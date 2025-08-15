@@ -415,6 +415,20 @@ Windows 11 Enterprise N LTSC 2019	92NFX-8DJQP-P6BBQ-THF9C-7CG2H
 
 </details>
 
+<details>
+
+<summary>Ativar Windows (MAS)</summary>
+
+# Ativação
+
+Além da ativação do Windows usando chaves genericas `KMS` foi utilizado o metórdo `MAS`. Que é bastanten utilizado para ativar o Windows de maneira não oficial, lembre-se que caso queria ativar o Windows utilizando o método `MAS` é de total responsabilidade do utilizado do script, apenas forneço o caminho oferecido para ativar não sou responsável por nenhum efeito negativo depois da ativação do script utilizado.
+
+```sh
+https://github.com/massgravel/Microsoft-Activation-Scripts
+```
+
+</details>
+
 ## Documentação Dos Códigos Utilizados:
 
 | Libraries |  Links |
