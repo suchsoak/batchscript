@@ -240,7 +240,7 @@ wsl --install -d Ubuntu
 
 ## 📝 Licença
 
-MIT License © 2025 ~#M?x
+MIT License © 2026 ~#M?x
 
 ---
 
