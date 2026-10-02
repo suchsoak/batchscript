@@ -1,6 +1,6 @@
 @echo off
 chcp 65001 >nul
-title Suchsoak - Ferramentas de Manutencao v1.0.8
+title Suchsoak - Ferramentas de Manutencao v1.0.9
 mode con: cols=72 lines=40
 
 :: ============================================================
