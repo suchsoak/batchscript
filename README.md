@@ -1,6 +1,5 @@
-<p align="center">
-  <img src="https://github.com/suchsoak/batchscript/blob/main/BATCHALL_.png" alt="batchall.png" width="400">
-</p>
+<img src="https://github.com/suchsoak/batchscript/blob/main/BATCHALL_.png" alt="batchall.png"></img>
+
 
 # 🚀 BATCHALL: Sua Central de Scripts Batch para Windows! 🖥️
 
